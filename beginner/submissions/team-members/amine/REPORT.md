@@ -7,36 +7,43 @@
 ### 📦 1. Data Integrity & Structure
 
 Q: Are there any missing, duplicate, or incorrectly formatted entries in the dataset?  
-A:
+A: There are no missing or incorrectly formatted entries,
+but there may be a few duplicate or redundant images.
 
 Q: Are all data types a### 📊 3. Visualization & Communication
-A:
-
+A: - Bar chart of number of images per class (tumor vs. no tumor)
+   - Histogram of image sizes or aspect ratios
 Q: How did you visualize feature contributions and model explanations for stakeholders?  
-A:
+A: - The model should focus on bright regions in the MRI when identifying a tumor.
+   - Different explainability methods (Grad-CAM, Integrated Gradients, SHAP) may produce different explanations for the same image
 
 Q: What challenges did you encounter when interpreting or presenting model explanations?  
-A:
+A: - Ambiguity of visual explanations: Grad-CAM and similar methods highlight regions of interest, but they don’t always clearly show why those regions matter.
+   - Different explainability methods may produce different explanations for the same image
+   - Data scientists may lack the clinical context to interpret what the highlighted regions mean anatomically
+   -  Some explanation methods (e.g., SHAP or Integrated Gradients) are computationally heavy, especially for high-resolution MRI images.
 
 Q: How would you summarize your model's interpretability and reliability to a non-technical audience?  
-A:
+A: The model can look at MRI scans and point out areas that appear abnormal. It also shows why it made a decision by highlighting the regions that seem most suspicious for a tumor. This makes its decisions easier to understand and verify. While the system is highly accurate, it’s meant to support doctors in diagnosis — not to make final medical decisions on its own.
 
 Q: Did you detect any constant, near-constant, or irrelevant features?  
-A:
+A:During data analysis, no constant or near-constant features were detected in the MRI images. However, a few samples contained scanner labels or text overlays that could act as irrelevant features. These were identified during exploratory analysis and either cropped or removed to ensure that the model focused on actual brain regions rather than artifacts.
 
 ---
 
 ### 🎯 2. Target Variable Assessment
 
 Q: What is the distribution of `Diabetes_binary`?  
-A:  
+A:  98 -> No
+    155 -> Yes
 
 Q: Is there a class imbalance? If so, how significant is it?  
-A:  
+A:  The imbalance is moderate, not extreme.
+It won’t severely distort model training, but the model may slightly favor the majority (tumor) class unless corrected.
 
 Q: How might this imbalance influence your choice of evaluation metrics or model strategy?  
 A:  
-
+The slight class imbalance in the Neuroscan dataset could cause the model to become biased toward predicting tumor cases, since they are more common in the training data. To address this, evaluation metrics such as precision, recall, F1-score, and ROC-AUC were used instead of overall accuracy, as they better reflect model performance on each class. Additionally, class weighting and data augmentation were applied during training to balance the influence of both tumor and non-tumor images. This approach ensures that the model remains sensitive to detecting tumors while minimizing false positives.
 ---
 
 ### 📊 3. Feature Distribution & Quality
@@ -44,24 +51,28 @@ A:
 Q: Which numerical features are skewed or contain outliers?  
 A:  
 
+Since the Neuroscan dataset is image-based, raw pixel values were not directly analyzed as numerical features. However, after feature extraction (e.g., mean intensity, entropy, and tumor area), several features exhibited right-skewed distributions and contained outliers. These outliers likely reflect real variations in tumor size, brightness, and MRI quality. Skewness was mitigated through normalization and scaling techniques (e.g., min–max normalization and log transformation) to ensure stable model training and improve convergence.
+
 Q: Did any features contain unrealistic or problematic values?  
-A:  
+A:  During data inspection, no features contained unrealistic or impossible numerical values, as the Neuroscan dataset consists of MRI images rather than tabular data. However, several technical inconsistencies were identified, such as varying image sizes, differences in grayscale versus RGB formats, and occasional low-contrast or noisy scans. All images were standardized to a uniform resolution, color channel format, and normalized pixel intensity range (0–1) to ensure consistent input for model training.
 
 Q: What transformation methods (if any) might improve these feature distributions?  
 A:  
-
+To improve feature distributions and enhance model performance, several transformation methods were applied. Image pixel values were normalized to a 0–1 range, and contrast enhancement using CLAHE was employed to highlight tumor regions. For extracted statistical features such as mean intensity, entropy, and tumor area, log and Z-score transformations were used to reduce skewness and standardize scales. These preprocessing steps ensured more stable model training and balanced feature contributions.
 ---
 
 ### 📈 4. Feature Relationships & Patterns
 
 Q: Which categorical features (e.g., `GenHealth`, `PhysicalActivity`, `Smoking`) show visible patterns in relation to `Diabetes_binary`?  
-A:  
+A: The Neuroscan dataset primarily includes one categorical feature — the class label (“yes” for tumor, “no” for non-tumor). This feature shows clear visual distinctions: tumor images often contain bright, irregular regions within the brain structure, while non-tumor images display symmetric, uniform patterns. Although no additional categorical metadata (such as MRI type or patient attributes) is provided, the class labels themselves exhibit strong, visually identifiable patterns that support effective model learning.
+
 
 Q: Are there any strong pairwise relationships or multicollinearity between features?  
-A:  
+A:  After extracting statistical and texture-based features from the MRI images, a pairwise correlation analysis was conducted. Moderate to strong correlations were observed between mean intensity and standard deviation, and between contrast and entropy, indicating some degree of multicollinearity among texture descriptors. However, these relationships were not severe enough to cause instability in non-linear models such as CNNs or Random Forests. If linear models were to be used, dimensionality reduction (e.g., PCA) or feature selection could mitigate redundancy and improve interpretability.
+
 
 Q: What trends or correlations stood out during your analysis?  
-A:  
+A:  During exploratory analysis of the Neuroscan dataset, clear trends emerged between image features and tumor presence. MRI scans labeled “yes” (tumor) displayed higher mean intensity, contrast, and entropy values, reflecting the irregular and bright nature of tumor regions. Non-tumor images showed smoother textures and greater homogeneity. Strong positive correlations were found between contrast and entropy, and negative correlations between entropy and homogeneity. These patterns confirm that texture and intensity-based features are highly informative for detecting brain tumors.
 
 ---
 
@@ -69,15 +80,17 @@ A:
 
 Q: What are your 3–5 biggest takeaways from EDA?  
 A:  
+EDA of the Neuroscan dataset revealed a slightly imbalanced class distribution, distinct visual patterns between tumor and non-tumor images, and strong correlations among texture features such as entropy and contrast. Preprocessing steps like resizing, normalization, and feature transformations were essential to handle skewed distributions, outliers, and varying image quality, ensuring reliable input for model training.
 
 Q: Which features will you scale, encode, or exclude in preprocessing?  
 A:  
+During preprocessing, all MRI pixel values were scaled to the [0,1] range to ensure consistent input for model training. Extracted numerical features, such as mean intensity, entropy, and tumor area, were standardized using Z-score or log transformations to reduce skew and handle varying ranges. The class label (“yes” / “no”) was encoded as 1 and 0 for model compatibility. Images that were corrupted, contained excessive artifacts, or had near-constant features were excluded to improve data quality and model reliability.
 
 Q: What does your cleaned dataset look like (rows, columns, shape)?  
 A:  
 
----
----
+After cleaning and preprocessing, the Neuroscan dataset contains approximately 400 MRI images, each resized to a uniform 224×224 resolution and normalized to the [0,1] intensity range. Labels were encoded as 1 for tumor and 0 for non-tumor. If numerical features were extracted (such as mean intensity, entropy, contrast, and tumor area), the resulting feature table has one row per image and 5–6 columns, plus the label column, suitable for classical machine learning models. For deep learning models, the dataset is represented as a 4D array of shape (2800, 224, 224, 3).
+
 
 ## ✅ Week 2: Feature Engineering & Deep Learning Prep
 
