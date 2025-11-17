@@ -72,3 +72,26 @@ __pycache__/
 !README.md
 !requirements.txt
 !*.ipynb
+
+# -----------------------
+# Deployment artifacts
+# -----------------------
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env
+
+# Logs
+*.log
+
+# Jupyter checkpoints
+*.ipynb_checkpoints/
+
+# Model and OOD stats (heavy artifacts)
+Deployment/assets/*.keras
+Deployment/assets/*.npz

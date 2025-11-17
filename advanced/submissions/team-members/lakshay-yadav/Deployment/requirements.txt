@@ -1,0 +1,24 @@
+# ======================================
+# NeuroScan Deployment Requirements
+# Compatible with Python 3.10.18
+# ======================================
+
+# Core
+numpy==1.26.4
+pandas==2.2.2
+
+# Deep Learning
+tensorflow==2.16.1
+keras==3.3.3
+
+# Image Processing
+opencv-python==4.9.0.80
+Pillow==10.3.0
+
+# API Framework
+fastapi==0.111.0
+uvicorn==0.29.0
+python-multipart==0.0.9
+
+# Utility
+tqdm==4.66.4
