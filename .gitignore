@@ -126,4 +126,8 @@ venv.bak/
 *.db
 *.tar
 *.gz
-*.zip
+*.zipdataset/
+*.ipynb_checkpoints/
+__pycache__/
+.DS_Store
+Thumbs.db
